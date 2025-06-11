@@ -6,10 +6,10 @@ class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  _SettingsScreenState createState() => _SettingsScreenState();
+  SettingsScreenState createState() => SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class SettingsScreenState extends State<SettingsScreen> {
   bool notificationsEnabled = true;
   bool soundEnabled = true;
   bool vibrationEnabled = false;
@@ -65,7 +65,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withAlpha(13),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -150,7 +150,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withAlpha(13),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -218,7 +218,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withAlpha(13),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -292,7 +292,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withAlpha(13),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -332,7 +332,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Divider(height: 1, color: Colors.grey[200]),
           _buildSettingsItem(
             icon: Icons.star_outline,
-            title: '앱 평가하기',
+            title: '앱 평가',
             subtitle: '스토어에서 마일스톤 평가하기',
             onTap: () {
               _showRatingDialog();
@@ -494,7 +494,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             SizedBox(height: 8),
             Text('이메일: kim@example.com'),
             SizedBox(height: 8),
-            Text('가입일: 2024.01.15'),
+            Text('가입일: 2025.01.15'),
             SizedBox(height: 8),
             Text('계정 유형: PRO'),
           ],
@@ -519,15 +519,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('현재 플랜: PRO', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('추후 구현된다면 갱신 플랜: PRO',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: 12),
             Text('• 무제한 실시간 자막'),
-            Text('• 감정 분석 기능'),
-            Text('• 화자 구분 기능'),
-            Text('• 자막 저장 및 요약'),
+            Text('• 감정 분석 기능 강화'),
+            Text('• 화자 구분 기능 강화'),
+            Text('• 자막 저장 및 요약 강화'),
             Text('• 우선 고객 지원'),
             SizedBox(height: 12),
-            Text('다음 결제일: 2024.07.15'),
+            Text('다음 결제일: 20xx.xx.xx'),
           ],
         ),
         actions: [
@@ -547,7 +548,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('보안 설정'),
         content: const Text(
-            '보안 설정 기능이 곧 업데이트될 예정입니다.\n\n• 비밀번호 변경\n• 2단계 인증\n• 로그인 기록'),
+            '보안 설정 기능이 추후 업데이트될 예정입니다.\n\n• 비밀번호 변경\n• 2단계 인증\n• 로그인 기록'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -578,7 +579,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Text('A: 각 화자가 차례로 말할 때 가장 정확합니다.'),
               SizedBox(height: 8),
               Text('Q: 감정 분석이 틀려요'),
-              Text('A: 음성의 억양과 톤을 기반으로 분석합니다.'),
+              Text('A: 텍스트를 이용한 분석이라 매끄럽지 않을 수 있습니다.'),
             ],
           ),
         ),
@@ -679,7 +680,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Text('• 김두회 (201923275)'),
             Text('• 목경빈 (201923191)'),
             SizedBox(height: 12),
-            Text('© 2024 마일스톤. All rights reserved.'),
+            Text('© 2025 마일스톤. All rights reserved.'),
           ],
         ),
         actions: [

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../models/conversation_data.dart';
-import '../models/subtitle_data.dart';
 import 'conversation_detail_screen.dart';
 
 class SavedConversationsScreen extends StatefulWidget {
@@ -12,11 +11,11 @@ class SavedConversationsScreen extends StatefulWidget {
   });
 
   @override
-  _SavedConversationsScreenState createState() =>
-      _SavedConversationsScreenState();
+  SavedConversationsScreenState createState() =>
+      SavedConversationsScreenState();
 }
 
-class _SavedConversationsScreenState extends State<SavedConversationsScreen> {
+class SavedConversationsScreenState extends State<SavedConversationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

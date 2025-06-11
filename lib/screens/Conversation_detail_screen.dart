@@ -108,7 +108,7 @@ class ConversationDetailScreen extends StatelessWidget {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withAlpha(13),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -328,7 +328,7 @@ class ConversationDetailScreen extends StatelessWidget {
     // 실제로는 file_picker나 share_plus 패키지를 사용
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('내보내기 기능이 곧 업데이트될 예정입니다.'),
+        content: Text('내보내기 기능이 추후 업데이트될 예정입니다.'),
         backgroundColor: Colors.blue,
       ),
     );
@@ -360,7 +360,7 @@ class ConversationDetailScreen extends StatelessWidget {
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('공유 기능이 곧 업데이트될 예정입니다.'),
+        content: Text('공유 기능이 추후 업데이트 예정입니다.'),
         backgroundColor: Colors.green,
       ),
     );
@@ -415,16 +415,12 @@ class ConversationDetailScreen extends StatelessWidget {
     switch (emotion) {
       case "기쁨":
         return Colors.blue[50]!;
-      case "차분":
-        return Colors.green[50]!;
-      case "기대":
-        return Colors.purple[50]!;
-      case "짜증":
-        return Colors.red[50]!;
-      case "놀람":
-        return Colors.orange[50]!;
       case "슬픔":
-        return Colors.indigo[50]!;
+        return Colors.green[50]!;
+      case "차분":
+        return Colors.purple[50]!;
+      case "복합감정":
+        return Colors.red[50]!;
       default:
         return Colors.grey[50]!;
     }

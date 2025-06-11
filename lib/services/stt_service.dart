@@ -6,7 +6,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../models/subtitle_data.dart';
 
-// STT 서비스 구현 (강화된 감정 분석 포함)
+// STT 서비스 구현 (기초 감정 분석)
 class STTService extends ChangeNotifier {
   final SpeechToText _speechToText = SpeechToText();
 
@@ -18,7 +18,7 @@ class STTService extends ChangeNotifier {
   String _currentSpeaker = '화자1';
   int _speakerCount = 1;
 
-  // 강화된 음성 분석 관련 변수들
+  // 음성 분석 관련 변수들
   double _currentPitch = 150.0;
   double _currentVolume = 50.0;
   double _currentSpeechRate = 140.0;
@@ -115,14 +115,15 @@ class STTService extends ChangeNotifier {
 
     try {
       await _speechToText.listen(
-        onResult: _onSpeechResult,
-        listenFor: const Duration(seconds: 30),
-        pauseFor: const Duration(seconds: 3),
-        partialResults: true,
-        localeId: 'ko_KR',
-        cancelOnError: false,
-        listenMode: ListenMode.confirmation,
-      );
+          onResult: _onSpeechResult,
+          listenFor: const Duration(seconds: 30), // 몇초동안 듣고 있을건지
+          pauseFor: const Duration(seconds: 4), // 몇초 침묵시 자동으로 꺼지는가
+          localeId: 'ko_KR',
+          listenOptions: SpeechListenOptions(
+            partialResults: true,
+            cancelOnError: false,
+            listenMode: ListenMode.confirmation,
+          ));
 
       _isListening = true;
       _currentText = '';
@@ -185,6 +186,7 @@ class STTService extends ChangeNotifier {
       _lastRecognizedText = _currentText;
       _addSubtitle(_currentText, isPartial: false);
       _detectSpeakerChange();
+      _currentText = "";
     } else {
       notifyListeners();
     }
@@ -331,9 +333,6 @@ class STTService extends ChangeNotifier {
         '축하',
         '감사',
         '사랑',
-        '💕',
-        '😄',
-        '👍'
       ],
       '슬픔': [
         '슬프',
@@ -346,8 +345,6 @@ class STTService extends ChangeNotifier {
         '눈물',
         '절망',
         '외로',
-        '😢',
-        '😭'
       ],
       '화남': [
         '화나',
@@ -360,8 +357,6 @@ class STTService extends ChangeNotifier {
         '악',
         '!!!',
         '진짜',
-        '😡',
-        '💢'
       ],
       '놀람': [
         '어?',
@@ -373,10 +368,8 @@ class STTService extends ChangeNotifier {
         '놀라',
         '어떻게',
         '믿을 수 없',
-        '😲',
-        '😱'
       ],
-      '차분': ['그렇', '음', '네', '알겠', '이해', '괜찮', '보통', '그냥', '😐']
+      '차분': ['그렇', '음', '네', '알겠', '이해', '괜찮', '보통', '그냥']
     };
 
     // 강도 부사
@@ -489,7 +482,7 @@ class STTService extends ChangeNotifier {
       }
     }
 
-    // 최소 임계값 검사
+    // 최소 임계값 (범위에 들어오면 스코어 검사 하여 분류)
     if (maxScore < 0.3) {
       return '차분';
     }
@@ -497,7 +490,7 @@ class STTService extends ChangeNotifier {
     return topEmotion;
   }
 
-  // 간단한 감정 분석 (기존 방식)
+  // 간단한 감정 분석 (사전 기반 방식)
   String _analyzeEmotionSimple(String text) {
     if (text.contains('좋') ||
         text.contains('감사') ||
@@ -611,6 +604,8 @@ class STTService extends ChangeNotifier {
     }
   }
 
+  /* 화자 변환 구현 코드 : 추후 NLP 모델로, 화제 변화 감지, 문장 구조 or 어투 변화, 감정이 변하면 화자 구분
+     인칭 대명사 사용 구분 등 필요 (필요 기술 : 감정 확인, NLP, 키워드 매칭, 발화 시간 기록(스탬프) 등 )*/
   bool _shouldChangeSpeaker() {
     // 감정 변화도 화자 변경의 단서가 될 수 있음
     if (_emotionHistory.length >= 2) {
@@ -623,7 +618,7 @@ class STTService extends ChangeNotifier {
       }
     }
 
-    // 긴 침묵 후의 발화는 새로운 화자일 가능성
+    // 긴 침묵 후의 발화는 새로운 화자일 가능성 (이것은 단순히 녹음을 중지하고 다시 말하면 새로운 화자라고 인식함)
     if (_pauseDuration.inSeconds > 5) {
       return true;
     }

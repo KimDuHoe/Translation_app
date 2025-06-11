@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:http/http.dart' as http; // HTTP 패키지 import 복원
-import '../models/subtitle_data.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // flutter_dotenv 패키지 임포트
+import 'package:http/http.dart' as http;
+import '../models/subtitle_data.dart'; // SubtitleData 모델 경로에 맞게 확인
 
-// 요약 유형 정의 (클래스 외부에 정의)
+// 요약 유형 정의
 enum SummaryType {
   brief, // 간단 요약
   detailed, // 상세 요약
@@ -14,7 +15,13 @@ enum SummaryType {
 
 // 자막 요약 서비스
 class SummaryService {
-  static const String _openaiApiKey = ''; // 실제 API 키로 교체 필요
+  // === 핵심 변경 부분 시작 ===
+  // .env 파일에서 'OPENAI_API_KEY'라는 이름의 키를 가져옵니다.
+  // 이 키 이름은 .env 파일 (예: 프로젝트 루트의 .env)에 정의된 이름과 정확히 일치해야 합니다.
+  // 예: .env 파일 내용 -> OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  static final String _openaiApiKey = dotenv.env['OPENAI_API_KEY']!;
+  // === 핵심 변경 부분 끝 ===
+
   static const String _openaiUrl = 'https://api.openai.com/v1/chat/completions';
 
   // 대화 요약 생성
@@ -29,7 +36,7 @@ class SummaryService {
       // 2. 요약 타입별 프롬프트 생성
       String prompt = _generatePrompt(conversationText, type);
 
-      // 3. OpenAI API 호출 (실제 구현시)
+      // 3. OpenAI API 호출
       String summary = await _callOpenAI(prompt);
 
       // 4. 추가 분석 수행
@@ -50,7 +57,7 @@ class SummaryService {
       );
     } catch (e) {
       // print('요약 생성 중 오류: $e'); // 디버깅용 - 필요시 주석 해제
-      // 오프라인 요약 기능으로 fallback
+      // API 호출 실패 시 오프라인 요약 기능으로 fallback
       return _generateOfflineSummary(subtitles, type);
     }
   }
@@ -65,7 +72,7 @@ class SummaryService {
       // 화자별로 대화 구성
       buffer.writeln('${subtitle.speaker}: ${subtitle.text}');
 
-      // 감정 정보 포함
+      // 감정 정보 포함 (감정 필터링)
       if (subtitle.emotion != '차분') {
         buffer.writeln('  [감정: ${subtitle.emotion}]');
       }
@@ -129,10 +136,10 @@ $conversationText
         Uri.parse(_openaiUrl),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_openaiApiKey',
+          'Authorization': 'Bearer $_openaiApiKey', // .env에서 로드한 키 사용
         },
         body: jsonEncode({
-          'model': 'gpt-3.5-turbo',
+          'model': 'gpt-3.5-turbo', // 사용하는 모델에 따라 변경 가능
           'messages': [
             {
               'role': 'system',
@@ -149,33 +156,36 @@ $conversationText
         final data = jsonDecode(response.body);
         return data['choices'][0]['message']['content'];
       } else {
+        // API 오류 발생 시 상세한 에러 메시지 출력 (디버깅용)
+        print('OpenAI API 호출 실패: ${response.statusCode}, ${response.body}');
         throw Exception('API 호출 실패: ${response.statusCode}');
       }
     } catch (e) {
-      // API 오류시 오프라인 요약으로 fallback
-      // print('OpenAI API 호출 오류: $e'); // 디버깅용
-
-      // 오프라인 요약 생성
+      // API 오류 발생 시 오프라인 요약으로 fallback
+      print('OpenAI API 호출 오류: $e'); // 디버깅용
       return _generateOfflinePromptSummary(prompt);
     }
   }
 
   // 오프라인 프롬프트 기반 요약
   static String _generateOfflinePromptSummary(String prompt) {
-    if (prompt.contains('간단')) {
+    // 프롬프트 내용에 따라 간단한 오프라인 요약을 생성
+    if (prompt.contains('간단히 요약해주세요')) {
       return '이것은 간단한 대화 요약입니다. 주요 내용을 간략하게 정리했습니다.';
-    } else if (prompt.contains('상세')) {
+    } else if (prompt.contains('상세히 요약해주세요')) {
       return '이것은 상세한 대화 요약입니다.\n\n1. 주요 논의 사항\n2. 참여자별 의견\n3. 결론 및 합의사항';
-    } else if (prompt.contains('핵심')) {
+    } else if (prompt.contains('핵심 포인트들을 정리해주세요')) {
       return '• 핵심 포인트 1\n• 핵심 포인트 2\n• 핵심 포인트 3';
-    } else if (prompt.contains('감정')) {
+    } else if (prompt.contains('감정적 측면을 중심으로 요약해주세요')) {
       return '대화의 전반적인 분위기는 긍정적이었으며, 참여자들 간의 원활한 소통이 이루어졌습니다.';
-    } else {
+    } else if (prompt.contains('액션 아이템들을 정리해주세요')) {
       return '대화에서 구체적인 행동 계획과 후속 조치가 논의되었습니다.';
+    } else {
+      return '요약 유형에 대한 오프라인 요약입니다. 네트워크 연결을 확인해주세요.';
     }
   }
 
-  // 추가 분석 수행
+  // 추가 분석 수행 (예시 로직, 실제 구현은 더 복잡할 수 있음)
   static Future<Map<String, dynamic>> _performAdditionalAnalysis(
       List<SubtitleData> subtitles) async {
     return {
@@ -186,15 +196,15 @@ $conversationText
     };
   }
 
-  // 핵심 주제 추출
+  // 핵심 주제 추출 (간단한 키워드 빈도 분석)
   static List<String> _extractKeyTopics(List<SubtitleData> subtitles) {
     Map<String, int> topicCount = {};
     List<String> commonTopics = [];
 
-    // 키워드 기반 주제 추출 (실제로는 NLP 라이브러리 사용)
     for (SubtitleData subtitle in subtitles) {
       List<String> words = subtitle.text.split(' ');
       for (String word in words) {
+        // 2글자 이상 단어만 카운트 (불용어 필터링 필요)
         if (word.length > 2) {
           topicCount[word] = (topicCount[word] ?? 0) + 1;
         }
@@ -205,6 +215,7 @@ $conversationText
     var sortedTopics = topicCount.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
+    // 상위 5개 주제 중 빈도수가 2보다 큰 것만 추가
     for (int i = 0; i < 5 && i < sortedTopics.length; i++) {
       if (sortedTopics[i].value > 2) {
         commonTopics.add(sortedTopics[i].key);
@@ -214,7 +225,7 @@ $conversationText
     return commonTopics;
   }
 
-  // 참여자 분석
+  // 참여자별 발언 통계 및 감정 분석
   static Map<String, Map<String, dynamic>> _analyzeParticipants(
       List<SubtitleData> subtitles) {
     Map<String, Map<String, dynamic>> analysis = {};
@@ -222,10 +233,10 @@ $conversationText
     for (SubtitleData subtitle in subtitles) {
       if (!analysis.containsKey(subtitle.speaker)) {
         analysis[subtitle.speaker] = {
-          'totalMessages': 0,
-          'totalWords': 0,
-          'emotions': <String, int>{},
-          'averageMessageLength': 0,
+          'totalMessages': 0, // 총 발언 수
+          'totalWords': 0, // 총 단어 수
+          'emotions': <String, int>{}, // 감정별 빈도
+          'averageMessageLength': 0.0, // 평균 메시지 길이
         };
       }
 
@@ -240,16 +251,19 @@ $conversationText
 
     // 평균 메시지 길이 계산
     analysis.forEach((speaker, data) {
-      data['averageMessageLength'] = data['totalWords'] / data['totalMessages'];
+      if (data['totalMessages'] > 0) {
+        data['averageMessageLength'] =
+            data['totalWords'] / data['totalMessages'];
+      }
     });
 
     return analysis;
   }
 
-  // 감정 분석
+  // 전체 감정 분석
   static Map<String, dynamic> _analyzeEmotions(List<SubtitleData> subtitles) {
-    Map<String, int> emotionCount = {};
-    Map<String, List<String>> emotionMoments = {};
+    Map<String, int> emotionCount = {}; // 감정별 총 빈도
+    Map<String, List<String>> emotionMoments = {}; // 감정 발생 시점 및 내용
 
     for (SubtitleData subtitle in subtitles) {
       String emotion = subtitle.emotion;
@@ -261,23 +275,28 @@ $conversationText
       emotionMoments[emotion]!.add('${subtitle.time}: ${subtitle.text}');
     }
 
-    // 전체적인 감정 분위기 계산
+    // 전체적인 대화 분위기 계산
     String overallMood = _calculateOverallMood(emotionCount);
 
     return {
       'emotionDistribution': emotionCount,
       'emotionMoments': emotionMoments,
       'overallMood': overallMood,
-      'emotionChanges': _trackEmotionChanges(subtitles),
+      'emotionChanges': _trackEmotionChanges(subtitles), // 감정 변화 추적
     };
   }
 
-  // 전체적인 감정 분위기 계산
+  // 전체적인 감정 분위기 추정
   static String _calculateOverallMood(Map<String, int> emotionCount) {
     if (emotionCount.isEmpty) return '중립적';
 
-    int positive = (emotionCount['기쁨'] ?? 0) + (emotionCount['기대'] ?? 0);
-    int negative = (emotionCount['짜증'] ?? 0) + (emotionCount['슬픔'] ?? 0);
+    // 긍정, 부정, 중립 감정 분류 (당신이 정의한 감정 레이블에 따라 조정)
+    int positive = (emotionCount['기쁨'] ?? 0) +
+        (emotionCount['기대'] ?? 0) +
+        (emotionCount['긍정'] ?? 0);
+    int negative = (emotionCount['짜증'] ?? 0) +
+        (emotionCount['슬픔'] ?? 0) +
+        (emotionCount['화남'] ?? 0);
     int neutral = emotionCount['차분'] ?? 0;
 
     if (positive > negative && positive > neutral) {
@@ -285,7 +304,7 @@ $conversationText
     } else if (negative > positive && negative > neutral) {
       return '부정적';
     } else {
-      return '차분함';
+      return '차분함'; // 차분하거나 긍정/부정 비율이 비슷할 때
     }
   }
 
@@ -298,6 +317,7 @@ $conversationText
     for (int i = 0; i < subtitles.length; i++) {
       String currentEmotion = subtitles[i].emotion;
 
+      // 이전 감정과 현재 감정이 다르고, 이전 감정이 비어있지 않을 때 (첫 발화 제외)
       if (previousEmotion.isNotEmpty && previousEmotion != currentEmotion) {
         changes.add({
           'time': subtitles[i].time,
@@ -307,18 +327,16 @@ $conversationText
           'text': subtitles[i].text,
         });
       }
-
       previousEmotion = currentEmotion;
     }
-
     return changes;
   }
 
-  // 액션 아이템 추출
+  // 액션 아이템 추출 (키워드 기반)
   static List<String> _extractActionItems(List<SubtitleData> subtitles) {
     List<String> actionItems = [];
 
-    // 액션 키워드 패턴
+    // 액션 관련 키워드 패턴 (필요에 따라 더 추가하거나 정교화)
     List<String> actionKeywords = [
       '해야',
       '할게',
@@ -331,30 +349,40 @@ $conversationText
       '확인',
       '검토',
       '준비',
-      '계획'
+      '계획',
+      '제출',
+      '완료',
+      '시작',
+      '마무리',
+      '보고',
+      '알아볼',
+      '찾아볼'
     ];
 
     for (SubtitleData subtitle in subtitles) {
+      // 대소문자 구분 없이 검색하고, 한 번 찾으면 다음 자막으로 이동
+      String lowerText = subtitle.text.toLowerCase();
       for (String keyword in actionKeywords) {
-        if (subtitle.text.contains(keyword)) {
+        if (lowerText.contains(keyword)) {
           actionItems.add('${subtitle.speaker}: ${subtitle.text}');
-          break;
+          break; // 해당 자막에서 키워드를 찾았으면 다음 자막으로 넘어감
         }
       }
     }
-
     return actionItems;
   }
 
-  // 대화 지속 시간 계산
+  // 대화 지속 시간 계산 (간단한 추정)
   static Duration _calculateDuration(List<SubtitleData> subtitles) {
     if (subtitles.isEmpty) return Duration.zero;
 
-    // 간단한 추정 (실제로는 타임스탬프 기반 계산)
+    // 실제로는 SubtitleData에 타임스탬프가 있다면 그것을 기반으로 정확히 계산해야 합니다.
+    // 여기서는 자막 개수 기반으로 분 단위로 간단히 추정합니다.
+    // 예를 들어, 각 자막이 대략 1분 간격이라고 가정
     return Duration(minutes: subtitles.length);
   }
 
-  // 오프라인 요약 기능 (fallback)
+  // 오프라인 요약 기능 (API 호출 실패 시 사용될 fallback)
   static ConversationSummary _generateOfflineSummary(
       List<SubtitleData> subtitles, SummaryType type) {
     String summary = _generateSimpleSummary(subtitles, type);
@@ -370,12 +398,12 @@ $conversationText
       generatedAt: DateTime.now(),
       wordCount: subtitles
           .map((s) => s.text.split(' ').length)
-          .reduce((a, b) => a + b),
+          .reduce((a, b) => a + b), // 모든 자막의 단어 수 합계
       duration: _calculateDuration(subtitles),
     );
   }
 
-  // 간단한 오프라인 요약
+  // 오프라인 간단 요약 생성 (다양한 요약 타입에 대응)
   static String _generateSimpleSummary(
       List<SubtitleData> subtitles, SummaryType type) {
     if (subtitles.isEmpty) return '대화 내용이 없습니다.';
@@ -399,9 +427,11 @@ $conversationText
         summary.writeln('참여자: ${speakers.join(', ')}');
         summary.writeln('총 발언 수: $totalMessages개');
         summary.writeln('\n주요 대화 내용:');
+        // 처음 3개 자막만 예시로 포함
         for (int i = 0; i < 3 && i < subtitles.length; i++) {
           summary.writeln('- ${subtitles[i].speaker}: ${subtitles[i].text}');
         }
+        // 더 많은 자막을 포함하고 싶다면 for 루프 조건 변경
         break;
 
       case SummaryType.keyPoints:
@@ -430,7 +460,7 @@ $conversationText
         if (actions.isNotEmpty) {
           summary.writeln('✅ 액션 아이템:');
           for (int i = 0; i < actions.length && i < 5; i++) {
-            summary.writeln('• ${actions[i]}');
+            summary.writeln('• ${actions[i]}'); // 최대 5개 액션 아이템
           }
         } else {
           summary.write('구체적인 액션 아이템이 발견되지 않았습니다.');
@@ -468,6 +498,7 @@ class ConversationSummary {
     required this.duration,
   });
 
+  // JSON 직렬화 (저장 등에 활용)
   Map<String, dynamic> toJson() {
     return {
       'originalSubtitles': originalSubtitles.map((s) => s.toJson()).toList(),
@@ -483,6 +514,7 @@ class ConversationSummary {
     };
   }
 
+  // JSON 역직렬화 (불러오기 등에 활용)
   factory ConversationSummary.fromJson(Map<String, dynamic> json) {
     return ConversationSummary(
       originalSubtitles: (json['originalSubtitles'] as List)
@@ -491,7 +523,7 @@ class ConversationSummary {
       summary: json['summary'],
       summaryType: SummaryType.values.firstWhere(
         (e) => e.toString() == json['summaryType'],
-        orElse: () => SummaryType.brief,
+        orElse: () => SummaryType.brief, // 기본값 설정
       ),
       keyTopics: List<String>.from(json['keyTopics']),
       participantAnalysis:

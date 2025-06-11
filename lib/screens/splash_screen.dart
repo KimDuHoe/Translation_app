@@ -6,10 +6,10 @@ class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  SplashScreenState createState() => SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _logoController;
   late AnimationController _textController;
@@ -127,7 +127,7 @@ class _SplashScreenState extends State<SplashScreen>
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.2),
+                                    color: Colors.black.withAlpha(51),
                                     blurRadius: 20,
                                     offset: const Offset(0, 10),
                                   ),
@@ -174,7 +174,7 @@ class _SplashScreenState extends State<SplashScreen>
                                     '스마트 음성 보조 시스템',
                                     style: TextStyle(
                                       fontSize: 14,
-                                      color: Colors.white.withOpacity(0.9),
+                                      color: Colors.white.withAlpha(230),
                                       letterSpacing: 1,
                                     ),
                                     textAlign: TextAlign.center,
@@ -197,10 +197,10 @@ class _SplashScreenState extends State<SplashScreen>
                     children: [
                       // 로딩 텍스트
                       Text(
-                        '청각장애인을 위한 소통의 다리',
+                        '소통의 다리, 더 넓은 세상으로',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withAlpha(204),
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -212,7 +212,7 @@ class _SplashScreenState extends State<SplashScreen>
                         width: MediaQuery.of(context).size.width * 0.7,
                         height: 4,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.3),
+                          color: Colors.white.withAlpha(77),
                           borderRadius: BorderRadius.circular(2),
                         ),
                         child: AnimatedBuilder(
@@ -227,7 +227,7 @@ class _SplashScreenState extends State<SplashScreen>
                                   borderRadius: BorderRadius.circular(2),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.white.withOpacity(0.5),
+                                      color: Colors.white.withAlpha(128),
                                       blurRadius: 8,
                                     ),
                                   ],
@@ -269,12 +269,14 @@ class _SplashScreenState extends State<SplashScreen>
             double opacity = 0.3 +
                 0.7 * (1 - (animationValue - 0.5).abs() * 2).clamp(0.0, 1.0);
 
+            int alphaValue = (opacity * 255).round();
+
             return Container(
               margin: const EdgeInsets.symmetric(horizontal: 4),
               width: 8,
               height: 8,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(opacity),
+                color: Colors.white.withAlpha(alphaValue),
                 shape: BoxShape.circle,
               ),
             );

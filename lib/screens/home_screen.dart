@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../models/subtitle_data.dart';
 import '../models/conversation_data.dart';
 import '../services/stt_service.dart';
-import '../services/summary_service.dart';
 import 'settings_screen.dart';
 import 'saved_conversations_screen.dart';
 import 'summary_screen.dart';
@@ -11,10 +10,10 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+class HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _dotsController;
 
@@ -26,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   bool _isListening = false;
   String _currentText = '';
   double _confidence = 0.0;
-  String _currentSpeaker = '화자1';
+  String _currentSpeaker = '화자';
 
   // 자막 데이터
   List<SubtitleData> _subtitles = [];
@@ -192,10 +191,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withAlpha(51),
                         borderRadius: BorderRadius.circular(16),
-                        border:
-                            Border.all(color: Colors.white.withOpacity(0.3)),
+                        border: Border.all(color: Colors.white.withAlpha(77)),
                       ),
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
