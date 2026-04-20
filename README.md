@@ -1,6 +1,7 @@
 # translation_app
 
 청각장애인을 대상으로 한 MILESTONE 음성 보조 앱
+Claude 활용, 프런트엔드 제작
 
 ## Getting Started
 
