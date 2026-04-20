@@ -1,10 +1,10 @@
-# translation_app
+# + translation_app
 
 청각장애인을 대상으로 한 MILESTONE 음성 보조 앱
 <br/>
 Claude 활용, 프런트엔드 제작
 
-# 실행 화면
+# + 실행 화면
 시작화면<br/>
 <img width="1080" height="2340" alt="KakaoTalk_20260420_152438789" src="https://github.com/user-attachments/assets/6f426ded-be0a-43b3-82b9-a0e3430679b4" />
 <br/>
