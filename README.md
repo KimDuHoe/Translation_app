@@ -18,9 +18,9 @@ Claude 활용, 프런트엔드 제작
 
 + 메인메뉴<br/>
 <img width="1080" height="2340" alt="KakaoTalk_20260420_152438789_01" src="https://github.com/user-attachments/assets/e4856aeb-843a-406d-ad0a-70005e842ca1" />
-
+내용
   마이크 버튼을 누르고 목소리를 녹음합니다.
-
+내용
 --------------------------------------
 
 + 화자선택<br/>
