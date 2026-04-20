@@ -14,19 +14,22 @@ Claude 활용, 프런트엔드 제작
 + 시작화면<br/>
 <img width="1080" height="2340" alt="KakaoTalk_20260420_152438789" src="https://github.com/user-attachments/assets/6f426ded-be0a-43b3-82b9-a0e3430679b4" />
 
+
 --------------------------------------
 
 + 메인메뉴<br/>
 <img width="1080" height="2340" alt="KakaoTalk_20260420_152438789_01" src="https://github.com/user-attachments/assets/e4856aeb-843a-406d-ad0a-70005e842ca1" />
-내용
+
   마이크 버튼을 누르고 목소리를 녹음합니다.
-내용
+
+  
 --------------------------------------
 
 + 화자선택<br/>
 <img width="1080" height="2340" alt="KakaoTalk_20260420_152438789_02" src="https://github.com/user-attachments/assets/6b74e150-3206-4f79-9489-c2f67f631bb8" />
 
   들리는 목소리를 기반으로 화자를 구분해주는 탭공간입니다. (화자의 감정 상태를 보여주는 기반 : 쉽게 화자의 상태를 파악할 수 있도록)
+
 
 --------------------------------------
 
@@ -35,12 +38,14 @@ Claude 활용, 프런트엔드 제작
 
   오픈AI를 이용해 화자들이 나눈 대화들을 인공지능이 요약해주는 공간입니다.
 
+
 --------------------------------------
 
 + 저장<br/>
 <img width="1080" height="2340" alt="KakaoTalk_20260420_152438789_04" src="https://github.com/user-attachments/assets/56587ef9-bf01-42fa-bcca-72a60809f51e" />
 
   나눈 대화들을 저장하여 보관할 수 있는 공간입니다.
+
 
 --------------------------------------
 
@@ -49,6 +54,7 @@ Claude 활용, 프런트엔드 제작
 <img width="1080" height="2340" alt="KakaoTalk_20260420_152438789_06" src="https://github.com/user-attachments/assets/6dcd8f80-a3b4-4953-8da7-dcef33928835" />
 
   감정 상태를 정리하여 보여줍니다.
+
 
 --------------------------------------
 
